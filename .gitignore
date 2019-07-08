@@ -1,0 +1,21 @@
+# Vet
+vet.report
+
+# Tests
+tests.xml
+
+# Glide vendor pkgs
+vendor
+
+# Node modules
+node_modules
+
+# Binaries
+bin
+
+# Dotenv
+.env
+!.env.example
+
+# Misc
+.DS_Store
