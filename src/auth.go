@@ -1,10 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"golock/src/auth"
 	"log"
-	"os"
 	"time"
 
 	"golock/src/keyboard"
@@ -14,6 +14,14 @@ import (
 	x "github.com/linuxdeepin/go-x11-client"
 	"github.com/linuxdeepin/go-x11-client/util/keysyms"
 )
+
+var (
+	user string
+)
+
+func init() {
+	flag.StringVar(&user, "u", "root", "Login user")
+}
 
 func grabInputs(inputChan chan x.GenericEvent, errChan chan error) {
 	go keyboard.SelectKeystroke(inputChan)
@@ -104,6 +112,7 @@ func getPass(inputChan chan x.GenericEvent, errChan chan error) (string, error) 
 						case keysyms.XK_Return:
 							return pass, nil
 						case keysyms.XK_BackSpace:
+							state.EventChan <- BackSpaceEvent
 							if len(pass) > 0 {
 								pass = pass[:len(pass)-1]
 							}
@@ -113,12 +122,13 @@ func getPass(inputChan chan x.GenericEvent, errChan chan error) (string, error) 
 					}
 				}
 
+				state.PasswordLength = int32(len(pass))
 				if len(pass) == 0 && !isPasswordEmpty {
 					isPasswordEmpty = true
 					state.EventChan <- EmptyPasswordEvent
 					log.Println("Password empty!")
 				}
-				log.Printf("KeyPressEventCode: %s | %t (%#v) | pass: %s\n", str, ok, event.Detail, pass)
+				log.Printf("KeyPressEventCode: %s | %t (%#v)\n", str, ok, event.Detail)
 			case x.KeyReleaseEventCode:
 				// event, _ := x.NewKeyReleaseEvent(e)
 				// str, ok := keyboard.KeyCodeToString(event.Detail, 0, conn)
@@ -145,26 +155,26 @@ func watchAuth(done chan bool) {
 
 	for {
 		pass, err := getPass(inputChan, errChan)
-		fmt.Printf("pass: %#v | err: %#v\n", pass, err)
+		// fmt.Printf("pass: %#v | err: %#v\n", pass, err)
 		// pass, err = speakeasy.Ask("Enter password: ")
 		// if err != nil {
 		// 	panic(err)
 		// }
 
-		err = auth.Check("kelfitas", pass)
+		state.EventChan <- AuthCheckEvent
+		err = auth.Check(user, pass)
 		fmt.Printf("%#v\n", err)
 		if err == nil {
+			state.EventChan <- AuthSuccessEvent
 			fmt.Println("Auth success!")
+			time.Sleep(1 * time.Second)
 			return
 		}
 		fmt.Println("Auth Failed! Try again!")
 		state.EventChan <- WrongPasswordEvent
 		fmt.Println("after event sent")
 
-		time.Sleep(5 * time.Second)
+		// time.Sleep(5 * time.Second)
 		fmt.Println("after time.sleep")
-
-		os.Exit(0)
-		return
 	}
 }

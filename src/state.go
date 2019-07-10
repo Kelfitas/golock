@@ -1,17 +1,28 @@
 package main
 
+import "time"
+
 type Event uint32
 
 const (
-	EmptyPasswordEvent Event = iota
+	NoEvent Event = iota
+	EmptyPasswordEvent
 	CapsChangedEvent
+	AuthSuccessEvent
+	AuthCheckEvent
 	WrongPasswordEvent
+	BackSpaceEvent
 	KeyPressEvent
 )
 
 type State struct {
-	IsCapsLockOn bool
-	EventChan    chan Event
+	IsCapsLockOn     bool
+	EventChan        chan Event
+	LastEvent        Event
+	ShouldDraw       bool
+	LastQueuedRedraw time.Time
+	LastStart        int32
+	PasswordLength   int32
 }
 
 var state *State
