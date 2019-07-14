@@ -1,5 +1,15 @@
 package keyboard
 
+/*
+#cgo CFLAGS: -g -Wall -O3 -I.
+#cgo LDFLAGS: -lm -lxcb -lxcb-xtest -lstdc++ -lXext -lXtst -lX11
+#include <stdlib.h>
+#include "keyboard.h"
+*/
+import (
+	"C"
+)
+
 import (
 	"log"
 
@@ -37,9 +47,9 @@ func SelectKeystroke(inputChan chan x.GenericEvent) error {
 		inputChan <- evt
 		switch evt.GetEventCode() {
 		case x.KeyPressEventCode:
-			// event, _ := x.NewKeyPressEvent(evt)
+			event, _ := x.NewKeyPressEvent(evt)
 			// log.Printf("KeyPressEventCode: %#v\n", event)
-			sendEvent(conn, x.KeyPressEventCode, evt)
+			SendEvent(conn, x.KeyPressEventCode, evt, event.Detail)
 			// mods := shortcuts.GetConcernedModifiers(event.State)
 			// log.Print("event mods:", shortcuts.Modifiers(event.State))
 			// key := shortcuts.Key{
@@ -57,9 +67,9 @@ func SelectKeystroke(inputChan chan x.GenericEvent) error {
 			// 	grabScreenKeystroke = nil
 			// }
 		case x.KeyReleaseEventCode:
-			// event, _ := x.NewKeyReleaseEvent(evt)
+			event, _ := x.NewKeyReleaseEvent(evt)
 			// log.Printf("KeyReleaseEventCode: %#v\n", event)
-			sendEvent(conn, x.KeyReleaseEventCode, evt)
+			SendEvent(conn, x.KeyReleaseEventCode, evt, event.Detail)
 			// if grabScreenKeystroke != nil {
 			// 	emitSignalKeyEvent(false, grabScreenKeystroke.String())
 			// 	grabScreenKeystroke = nil
@@ -170,10 +180,20 @@ func KeyCodeToString(keyCode x.Keycode, modifier uint16, conn *x.Conn) (string, 
 	return str, ok
 }
 
-func sendEvent(conn *x.Conn, eventCode uint32, event x.GenericEvent) error {
-	log.Printf("pass key %#v (%v)\n", event, eventCode)
-	rootWin := conn.GetDefaultScreen().Root
-	x.SendEvent(conn, true, rootWin, eventCode, event)
+func SendEvent(conn *x.Conn, eventCode uint32, event x.GenericEvent, detail x.Keycode) error {
+	// todo: this doesn't work
+	log.Printf("pass key %#v (%v) (%v)\n", event, eventCode, detail)
+	// // rootWin := conn.GetDefaultScreen().Root
+	// // x.SendEvent(conn, true, rootWin, eventCode, event)
+	// p := C.malloc(C.size_t(len(event)))
+	// defer C.free(p)
+
+	// // copy the data into the buffer, by converting it to a Go array
+	// cBuf := (*[1 << 30]byte)(p)
+	// copy(cBuf[:], event)
+	// C.sendEvent(C.uint(eventCode), (*C.char)(p), C.uint(detail))
+	// // C.xcb_send_event((*C.xcb_connection_t)(conn), true, (C.xcb_window_t)(rootWin), C.XCB_EVENT_MASK_BUTTON_PRESS, (*C.char)(event))
+	// // xcb_send_event(conn, true, screen->root, XCB_EVENT_MASK_BUTTON_PRESS, (char *)event);
 
 	return nil
 }

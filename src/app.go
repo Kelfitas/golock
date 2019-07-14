@@ -21,6 +21,7 @@ const (
 	buttonSpace    = buttonRadius + 5
 	buttonCenter   = buttonRadius + 5
 	buttonDiameter = 2 * buttonSpace
+	// scale          = 0.9
 
 	// Math
 	pi = math.Pi
@@ -34,23 +35,24 @@ const (
 )
 
 var (
+	// Sizes
 	height float64
 	width  float64
+
+	// Window
+	windowAlpha float64
 )
 
 func init() {
 	flag.Float64Var(&height, "h", 1080, "window height")
 	flag.Float64Var(&width, "w", 1920, "window width")
+	flag.Float64Var(&windowAlpha, "a", 0.5, "window alpha")
 }
 
 type App struct {
 	Window         *gtk.Window
 	Ctx            *cairo.Context
 	AlphaSupported bool
-}
-
-func (a *App) Repaint() {
-	screenChanged(&a.Window.Widget)
 }
 
 func (a *App) SetMainSourceRGBA() {
@@ -70,7 +72,7 @@ func (a *App) SetMainSourceRGBA() {
 		a.Ctx.SetSourceRGBA(250.0/255, 0, 0, 0.75)
 		break
 	case KeyPressEvent:
-		a.Ctx.SetSourceRGBA(0, 0, 0, 0.75)
+		a.Ctx.SetSourceRGBA(0, 0, 0, 0.5)
 		break
 	}
 }
@@ -143,8 +145,8 @@ func (a *App) CreateKeyPressArc() {
 
 		fallthrough
 	case KeyPressEvent:
-		a.Ctx.SetSourceRGB(0, 0, 0)
-		a.Ctx.SetLineWidth(10.0)
+		a.Ctx.SetSourceRGBA(0, 0, 0, 0.5)
+		a.Ctx.SetLineWidth(11.0)
 		startRadians := 2 * pi * 100
 		var start int32
 		for start == state.LastStart {
@@ -153,31 +155,10 @@ func (a *App) CreateKeyPressArc() {
 
 		state.LastStart = start
 		endRadians := (pi / 3)
-		a.Ctx.Arc(width/2, height/2, buttonRadius, float64(start), float64(start+int32(endRadians)))
+		a.Ctx.Arc(width/2, height/2, buttonRadius+1, float64(start), float64(start+int32(endRadians)))
 		a.Ctx.Stroke()
 		break
 	}
-}
-
-func (a *App) QueueRedraw(willClear bool) {
-	state.ShouldDraw = true
-	a.Window.QueueDraw()
-	if !willClear {
-		return
-	}
-
-	go func() {
-		now := time.Now()
-		state.LastQueuedRedraw = now
-		time.Sleep(redrawTo)
-
-		if !state.LastQueuedRedraw.Equal(now) {
-			return
-		}
-
-		state.ShouldDraw = false
-		a.Window.QueueDraw()
-	}()
 }
 
 func (a *App) Draw() {
@@ -202,6 +183,27 @@ func (a *App) Draw() {
 	app.DrawStateText()
 }
 
+func (a *App) QueueRedraw(willClear bool) {
+	state.ShouldDraw = true
+	a.Window.QueueDraw()
+	if !willClear {
+		return
+	}
+
+	go func() {
+		now := time.Now()
+		state.LastQueuedRedraw = now
+		time.Sleep(redrawTo)
+
+		if !state.LastQueuedRedraw.Equal(now) {
+			return
+		}
+
+		state.ShouldDraw = false
+		a.Window.QueueDraw()
+	}()
+}
+
 var app *App
 
 func watchState(done chan bool) {
@@ -213,7 +215,6 @@ func watchState(done chan bool) {
 			app.QueueRedraw(true)
 		case <-done:
 			done <- true
-			log.Println("watchState done!")
 			return
 		}
 	}
@@ -250,7 +251,7 @@ func startApp(done chan bool) {
 
 	// win.Add(vbox)
 
-	app.Repaint()
+	screenChanged(&app.Window.Widget)
 	go watchState(done)
 
 	win.ShowAll()
@@ -268,14 +269,12 @@ func screenChanged(widget *gtk.Widget) {
 		app.AlphaSupported = false
 	}
 
-	log.Printf("%#v\n", visual)
-
 	widget.SetVisual(visual)
 }
 
 func exposeDraw(w *gtk.Window, ctx *cairo.Context) {
 	if app.AlphaSupported {
-		ctx.SetSourceRGBA(0.0, 0.0, 0.0, 0.25)
+		ctx.SetSourceRGBA(0.0, 0.0, 0.0, windowAlpha)
 	} else {
 		ctx.SetSourceRGB(0.0, 0.0, 0.0)
 	}

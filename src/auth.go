@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&user, "u", "root", "Login user")
+	flag.StringVar(&user, "u", "", "Login user")
 }
 
 func grabInputs(inputChan chan x.GenericEvent, errChan chan error) {
@@ -136,8 +136,8 @@ func getPass(inputChan chan x.GenericEvent, errChan chan error) (string, error) 
 			}
 		case err := <-errChan:
 			return pass, err
-		case <-time.After(3 * time.Second):
-			return pass, nil
+			// case <-time.After(3 * time.Second):
+			// 	return pass, nil
 		}
 	}
 
@@ -145,6 +145,10 @@ func getPass(inputChan chan x.GenericEvent, errChan chan error) (string, error) 
 }
 
 func watchAuth(done chan bool) {
+	if user == "" {
+		panic("-u flag is required")
+	}
+
 	inputChan := make(chan x.GenericEvent)
 	errChan := make(chan error)
 	grabInputs(inputChan, errChan)

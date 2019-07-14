@@ -33,6 +33,24 @@ else ifeq ($(UNAME),Linux)
 	make linux
 endif
 
+install-windows:
+	@echo 'Not implemented'
+
+install-darwin:
+	@echo 'Not implemented'
+
+install-linux:
+	sudo cp ${BIN_DIR}/${BINARY}-linux-${GOARCH} /usr/local/bin/${BINARY}
+
+install:
+ifeq ($(OS),Windows_NT)
+	make install-windows
+else ifeq ($(UNAME),Darwin)
+	make install-darwin
+else ifeq ($(UNAME),Linux)
+	make install-linux
+endif
+
 run: deps
 	cd ${BUILD_DIR}; \
 	go run -race ${SOURCEDIR}
