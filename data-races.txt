@@ -1,0 +1,89 @@
+==================
+WARNING: DATA RACE
+Write at 0x00c0000b41d0 by goroutine 13:
+  main.watchState()
+      /home/kelfitas/gocode/src/golock/src/app.go:214 +0xb7
+
+Previous read at 0x00c0000b41d0 by goroutine 7:
+  main.(*App).Draw()
+      /home/kelfitas/gocode/src/golock/src/app.go:165 +0x59
+  main.startApp.func3()
+      /home/kelfitas/gocode/src/golock/src/app.go:244 +0x62
+  runtime.call32()
+      /usr/lib/go/src/runtime/asm_amd64.s:519 +0x3a
+  reflect.Value.Call()
+      /usr/lib/go/src/reflect/value.go:308 +0xc0
+  golock/vendor/github.com/gotk3/gotk3/glib.goMarshal()
+      /home/kelfitas/gocode/src/golock/vendor/github.com/gotk3/gotk3/glib/glib.go:233 +0x92a
+  golock/vendor/github.com/gotk3/gotk3/glib._cgoexpwrap_53c8011edc74_goMarshal()
+      _cgo_gotypes.go:4256 +0x68
+  runtime.call64()
+      /usr/lib/go/src/runtime/asm_amd64.s:520 +0x3a
+  main.startApp()
+      /home/kelfitas/gocode/src/golock/vendor/github.com/gotk3/gotk3/gtk/gtk.go:956 +0x3b4
+
+Goroutine 13 (running) created at:
+  main.startApp()
+      /home/kelfitas/gocode/src/golock/src/app.go:255 +0x3a0
+
+Goroutine 7 (running) created at:
+  main.main()
+      /home/kelfitas/gocode/src/golock/src/main.go:11 +0x11f
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000b41d4 by goroutine 13:
+  main.(*App).QueueRedraw()
+      /home/kelfitas/gocode/src/golock/src/app.go:187 +0x59
+  main.watchState()
+      /home/kelfitas/gocode/src/golock/src/app.go:215 +0xe8
+
+Previous read at 0x00c0000b41d4 by goroutine 7:
+  main.(*App).Draw()
+      /home/kelfitas/gocode/src/golock/src/app.go:165 +0x461
+  main.startApp.func3()
+      /home/kelfitas/gocode/src/golock/src/app.go:244 +0x62
+  runtime.call32()
+      /usr/lib/go/src/runtime/asm_amd64.s:519 +0x3a
+  reflect.Value.Call()
+      /usr/lib/go/src/reflect/value.go:308 +0xc0
+  golock/vendor/github.com/gotk3/gotk3/glib.goMarshal()
+      /home/kelfitas/gocode/src/golock/vendor/github.com/gotk3/gotk3/glib/glib.go:233 +0x92a
+  golock/vendor/github.com/gotk3/gotk3/glib._cgoexpwrap_53c8011edc74_goMarshal()
+      _cgo_gotypes.go:4256 +0x68
+  runtime.call64()
+      /usr/lib/go/src/runtime/asm_amd64.s:520 +0x3a
+  main.startApp()
+      /home/kelfitas/gocode/src/golock/vendor/github.com/gotk3/gotk3/gtk/gtk.go:956 +0x3b4
+
+Goroutine 13 (running) created at:
+  main.startApp()
+      /home/kelfitas/gocode/src/golock/src/app.go:255 +0x3a0
+
+Goroutine 7 (running) created at:
+  main.main()
+      /home/kelfitas/gocode/src/golock/src/main.go:11 +0x11f
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000b41d8 by goroutine 16:
+  main.(*App).QueueRedraw.func1()
+      /home/kelfitas/gocode/src/golock/src/app.go:195 +0x84
+
+Previous write at 0x00c0000b41d8 by goroutine 14:
+  main.(*App).QueueRedraw.func1()
+      /home/kelfitas/gocode/src/golock/src/app.go:195 +0x84
+
+Goroutine 16 (running) created at:
+  main.(*App).QueueRedraw()
+      /home/kelfitas/gocode/src/golock/src/app.go:193 +0xb0
+  main.watchState()
+      /home/kelfitas/gocode/src/golock/src/app.go:215 +0xe8
+
+Goroutine 14 (running) created at:
+  main.(*App).QueueRedraw()
+      /home/kelfitas/gocode/src/golock/src/app.go:193 +0xb0
+  main.watchState()
+      /home/kelfitas/gocode/src/golock/src/app.go:215 +0xe8
+==================
+

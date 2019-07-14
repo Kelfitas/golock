@@ -15,8 +15,6 @@ SOURCEDIR=${BUILD_DIR}/src
 VET_REPORT = ${BUILD_DIR}/vet.report
 TEST_REPORT = ${BUILD_DIR}/tests.xml
 
-NODEMON_BIN=nodemon
-
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
@@ -53,11 +51,7 @@ endif
 
 run: deps
 	cd ${BUILD_DIR}; \
-	go run -race ${SOURCEDIR}
-
-watch: deps
-	cd ${BUILD_DIR}; \
-	$(NODEMON_BIN) -e go -x 'go run -race ${SOURCEDIR} || exit 1'
+	go run -race -x ${SOURCEDIR} -u $(shell whoami)
 
 deps: vendor
 vendor: link

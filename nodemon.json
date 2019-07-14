@@ -1,9 +1,0 @@
-{
-    "verbose": true,
-    "watch": [
-        "src/**/*.*",
-        ".env",
-        "Gopkg.toml"
-    ],
-    "signal": "SIGTERM"
-}
