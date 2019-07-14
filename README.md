@@ -2,11 +2,10 @@
 
 ## Requirements
 - go >=1.12
-- 
 
 ## Install
-0. `make build`
-0. `make install`
+1. `make build`
+1. `make install`
 
 ## Usage
 - `golock -u user`
