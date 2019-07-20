@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golock/src/auth"
 	"log"
+	osUser "os/user"
 	"time"
 
 	"golock/src/keyboard"
@@ -146,7 +147,11 @@ func getPass(inputChan chan x.GenericEvent, errChan chan error) (string, error) 
 
 func watchAuth(done chan bool) {
 	if user == "" {
-		panic("-u flag is required")
+		u, err := osUser.Current()
+		if err != nil {
+			log.Fatal("Failed to get current user, try using -u flag. err:", err)
+		}
+		user = u.Username
 	}
 
 	inputChan := make(chan x.GenericEvent)
