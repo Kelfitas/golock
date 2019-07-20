@@ -40,13 +40,15 @@ var (
 	width  float64
 
 	// Window
-	windowAlpha float64
+	windowAlpha     float64
+	backgroundImage string
 )
 
 func init() {
 	flag.Float64Var(&height, "h", 1080, "window height")
 	flag.Float64Var(&width, "w", 1920, "window width")
 	flag.Float64Var(&windowAlpha, "a", 0.5, "window alpha")
+	flag.StringVar(&backgroundImage, "i", "", "background image")
 }
 
 type App struct {
@@ -273,7 +275,13 @@ func screenChanged(widget *gtk.Widget) {
 }
 
 func exposeDraw(w *gtk.Window, ctx *cairo.Context) {
-	if app.AlphaSupported {
+	if backgroundImage != "" {
+		surface, err := cairo.NewSurfaceFromPNG(backgroundImage)
+		if err != nil {
+			log.Println(err)
+		}
+		ctx.SetSourceSurface(surface, 0, 0)
+	} else if app.AlphaSupported {
 		ctx.SetSourceRGBA(0.0, 0.0, 0.0, windowAlpha)
 	} else {
 		ctx.SetSourceRGB(0.0, 0.0, 0.0)

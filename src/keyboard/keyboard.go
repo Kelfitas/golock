@@ -21,17 +21,17 @@ import (
 	"github.com/linuxdeepin/go-x11-client/util/mousebind"
 )
 
-func SelectKeystroke(inputChan chan x.GenericEvent) error {
+func SelectKeystroke(inputChan chan x.GenericEvent, errChan chan error) {
 	conn, err := x.NewConn()
 	if err != nil {
-		return err
+		errChan <- err
+		return
 	}
 	defer conn.Close()
 
 	err = grabKbdAndMouse(conn)
 	if err != nil {
-		log.Print("failed to grab keyboard and mouse:", err)
-		return err
+		log.Fatal("failed to grab keyboard and mouse:", err)
 	}
 	defer ungrabKbdAndMouse(conn)
 
@@ -87,7 +87,6 @@ func SelectKeystroke(inputChan chan x.GenericEvent) error {
 	}
 
 	log.Print("end selectKeystroke")
-	return nil
 }
 
 func emitSignalKeyEvent(pressed bool, keystroke string) {
@@ -103,7 +102,8 @@ func grabKbdAndMouse(conn *x.Conn) error {
 	}
 
 	// Ignore mouse grab error
-	const pointerEventMask = x.EventMaskButtonRelease | x.EventMaskButtonPress
+	// const pointerEventMask = x.EventMaskButtonRelease | x.EventMaskButtonPress
+	const pointerEventMask = x.None
 	err = mousebind.GrabPointer(conn, rootWin, pointerEventMask, x.None, x.None)
 	if err != nil {
 		keybind.UngrabKeyboard(conn)

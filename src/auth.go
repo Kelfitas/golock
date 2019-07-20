@@ -24,7 +24,7 @@ func init() {
 }
 
 func grabInputs(inputChan chan x.GenericEvent, errChan chan error) {
-	go keyboard.SelectKeystroke(inputChan)
+	go keyboard.SelectKeystroke(inputChan, errChan)
 }
 
 func isAllowedInPass(s string) bool {
