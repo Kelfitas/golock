@@ -8,7 +8,45 @@
 1. `make install`
 
 ## Usage
-- `golock -u user`
+- `golock`
+
+### Flags
+<table>
+    <thead>
+        <tr>
+            <th>flag</th>
+            <th>type</th>
+            <th>desc</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>-a</td>
+            <td>float</td>
+            <td>window alpha (default 0.5)</td>
+        </tr>
+        <tr>
+            <td>-h</td>
+            <td>float</td>
+            <td>window height (default 1080)</td>
+        </tr>
+        <tr>
+            <td>-i</td>
+            <td>string</td>
+            <td>background image</td>
+        </tr>
+        <tr>
+            <td>-u</td>
+            <td>string</td>
+            <td>login user</td>
+        </tr>
+        <tr>
+            <td>-w</td>
+            <td>float</td>
+            <td>window width (default 1920)</td>
+        </tr>
+    </tbody>
+</table>
 
 ## TODO
 - ~~hijack keyboard input - ok~~

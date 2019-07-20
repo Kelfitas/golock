@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&user, "u", "", "Login user")
+	flag.StringVar(&user, "u", "", "login user")
 }
 
 func grabInputs(inputChan chan x.GenericEvent, errChan chan error) {
